@@ -17,4 +17,5 @@ CSV files for each sheet will be saved in miqra-data folder.
 
 # Troubleshooting:
 
-If you get an error try deleting token.pickle (and you will have to log in to Google Sheets again)
+If you get an error try deleting token.pickle (and you will have to log in to Google Sheets again).
+Here's the relevant Google dashboard: https://console.developers.google.com/apis/dashboard
