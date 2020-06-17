@@ -44,16 +44,17 @@ class Downloader:
         exportUrl = re.sub("\/edit$", '/export', spreadsheetUrl)
         for sheet in result['sheets']:
             params = {
-                'format': 'csv',
+                'format': 'tsv',
                 'gid': sheet['properties']['sheetId'],
             } 
             sheet_title = create_filename(sheet['properties']['title'])
             queryParams = urllib.parse.urlencode(params)
             url = exportUrl + '?' + queryParams
+            print(url)
             response = requests.get(url)
-            filePath = '../miqra-data/%s.csv' % (sheet_title)
-            with open(filePath, 'wb') as csvFile:
-                csvFile.write(response.content)
+            filePath = '../miqra-data/%s.tsv' % (sheet_title)
+            with open(filePath, 'wb') as tsvFile:
+                tsvFile.write(response.content)
 
 def create_filename(sheet_title):
     return re.sub('"', '', sheet_title)
