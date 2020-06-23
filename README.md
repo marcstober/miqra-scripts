@@ -25,10 +25,13 @@ First time only: `mkdir ../miqra-data/`
 
 If using virtualenv: `.\venv/Scripts\activate`
 
-`python downloadfromgoogle.py`
+1. `python downloadfromgoogle.py`
 
 TSV files for each sheet will be saved in the `miqra-data` folder.
 
+2. `python splitbooks.py`
+
+Split download files into per-book files. Also fixes quoting from Github display. Removes un-split files when done.
 
 # Troubleshooting
 
