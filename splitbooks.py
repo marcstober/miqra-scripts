@@ -111,5 +111,3 @@ if __name__ == '__main__':
         zip_ref.extractall(Path(dirname, 'Miqra_al_pi_ha-Masorah'))
 
     import shutil
-    shutil.copyfile(Path(dirname, 'Miqra_al_pi_ha-Masorah', 'README.tsv'), Path(r'C:\Users\Marc\code\miqra-data\source\README.tsv'))
-    shutil.copyfile(Path(dirname, 'Miqra_al_pi_ha-Masorah', 'templates תבניות.tsv'), Path(r'C:\Users\Marc\code\miqra-data\source\templates תבניות.tsv'))
