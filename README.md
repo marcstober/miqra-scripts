@@ -27,11 +27,11 @@ If using virtualenv: `.\venv/Scripts\activate`
 
 1. `python downloadfromgoogle.py`
 
-TSV files for each sheet will be saved in the `miqra-data` folder.
+TSV files for each sheet will be saved in the `downloads` folder.
 
 2. `python splitbooks.py`
 
-Split download files into per-book files. Also fixes quoting from Github display. Removes un-split files when done.
+Split download files into per-book files and put them in `../miqra-data/source`. Also fixes quoting from Github display.
 
 # Troubleshooting
 

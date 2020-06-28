@@ -60,6 +60,22 @@ class Downloader:
             with open(filepath, 'wb') as tsvFile:
                 tsvFile.write(response.content)
 
+        # also get the zipped HTML version, mostly for the README and templates
+        exportUrl = re.sub("\/edit$", '/export', spreadsheetUrl)
+        params = {
+            'format': 'zip',
+        } 
+        queryParams = urllib.parse.urlencode(params)
+        url = exportUrl + '?' + queryParams
+        print(url)
+        response = requests.get(url)
+        filename = response.headers['Content-Disposition'].split('"')[1]
+
+        filepath = dirpath.joinpath(filename)
+        print('Saving to "{}"...'.format(filepath))
+        with open(filepath, 'wb') as f:
+            f.write(response.content)
+
 def create_filename(sheet_title):
     return re.sub('"', '', sheet_title)
 

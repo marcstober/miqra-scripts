@@ -2,6 +2,7 @@ import csv
 from hebrew_numbers import gematria_to_int
 from pathlib import Path
 import sys
+import zipfile
 
 class BookSplitter:
     def __init__(self):
@@ -105,3 +106,10 @@ if __name__ == '__main__':
     dirname = r'C:\Users\marc\code\miqra-scripts\downloads'
     for filename in filenames:
         BookSplitter().split_books(Path(dirname, filename))
+
+    with zipfile.ZipFile(Path(dirname, 'Miqra_al_pi_ha-Masorah.zip'), 'r') as zip_ref:
+        zip_ref.extractall(Path(dirname, 'Miqra_al_pi_ha-Masorah'))
+
+    import shutil
+    shutil.copyfile(Path(dirname, 'Miqra_al_pi_ha-Masorah', 'README.tsv'), Path(r'C:\Users\Marc\code\miqra-data\source\README.tsv'))
+    shutil.copyfile(Path(dirname, 'Miqra_al_pi_ha-Masorah', 'templates תבניות.tsv'), Path(r'C:\Users\Marc\code\miqra-data\source\templates תבניות.tsv'))
