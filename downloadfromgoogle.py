@@ -1,4 +1,4 @@
-import os
+from pathlib import Path
 import pickle
 import re
 import requests
@@ -9,6 +9,9 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 
 # See also: https://stackoverflow.com/a/51235960
+
+dirpath = Path('downloads')
+dirpath.mkdir(exist_ok=True)
 
 class Downloader:
     def run(self):
@@ -21,7 +24,7 @@ class Downloader:
         # The file token.pickle stores the user's access and refresh tokens, and is
         # created automatically when the authorization flow completes for the first
         # time.
-        if os.path.exists('token.pickle'):
+        if Path('token.pickle').exists():
             with open('token.pickle', 'rb') as token:
                 creds = pickle.load(token)
         # If there are no (valid) credentials available, let the user log in.
@@ -52,8 +55,9 @@ class Downloader:
             url = exportUrl + '?' + queryParams
             print(url)
             response = requests.get(url)
-            filePath = '../miqra-data/%s.tsv' % (sheet_title)
-            with open(filePath, 'wb') as tsvFile:
+            filepath = dirpath.joinpath('%s.tsv' % (sheet_title))
+            print('Saving to "{}"...'.format(filepath))
+            with open(filepath, 'wb') as tsvFile:
                 tsvFile.write(response.content)
 
 def create_filename(sheet_title):

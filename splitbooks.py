@@ -4,6 +4,7 @@ import sys
 
 class BookSplitter:
     def __init__(self):
+        self.outdirpath = Path(r'C:\Users\Marc\code\miqra-data\source')
         self.output_rows = 0
 
     def split_books(self, filepath):
@@ -43,14 +44,14 @@ class BookSplitter:
 
         print('Saving {} rows...'.format(len(rows)))
 
-        dir = self._path_obj.with_suffix('')
-        book_path = Path.joinpath(dir, book).with_suffix('.tsv')
+        dirpath = Path(self.outdirpath, self._path_obj.stem)
+        dirpath.mkdir(exist_ok=True) 
+                
+        filepath = Path(dirpath, book).with_suffix('.tsv')
 
-        print(book_path)
+        print('Saving to {}...'.format(filepath))
 
-        dir.mkdir(exist_ok=True)
-
-        with open(book_path, 'w', newline='', encoding='utf-8', ) as outfile:
+        with open(filepath, 'w', newline='', encoding='utf-8', ) as outfile:
 
             # To show TSV files nicely, Github requires any cell that has a quotation mark in it to:
             #   1. have the whole cell surrounded with quotation marks
@@ -64,12 +65,14 @@ class BookSplitter:
 
 if __name__ == '__main__':
     # BookSplitter().split_books(sys.argv[1])
-    filenames = ['חמש מגילות.tsv', 
+    filenames = [
+            'חמש מגילות.tsv', 
             'כתובים אחרונים.tsv', 
             'נביאים אחרונים.tsv', 
             'נביאים ראשונים.tsv',
             'ספרי אמת.tsv',
-            'תורה.tsv']
-    dirname = r'C:\Users\marc\code\miqra-data\source'
+            'תורה.tsv'
+        ]
+    dirname = r'C:\Users\marc\code\miqra-scripts\downloads'
     for filename in filenames:
         BookSplitter().split_books(Path(dirname, filename))
