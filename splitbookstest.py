@@ -14,7 +14,8 @@ class TestBookSplitter(unittest.TestCase):
 
         fs = bs.get_file_stem('ספר דברי הימים/דה"א ג')
         # print(fs)
-        self.assertEqual(fs, 'ספר דברי הימים - דה"א')
+        GERSHAYIM = chr(0x05f4)
+        self.assertEqual(fs, 'ספר דברי הימים - דה' + GERSHAYIM + 'א')
 
     def test_get_file_stem_minor(self): # trei asar, ezra/nehemiah
         bs = BookSplitter()
@@ -65,11 +66,20 @@ class TestBookSplitter(unittest.TestCase):
         fs = bs.get_file_stem('ספר בראשית/יא')
         self.assertEqual(fs, 'ספר בראשית - א-יא')
 
+        # 12-36
         fs = bs.get_file_stem('ספר בראשית/יב')
-        self.assertEqual(fs, 'ספר בראשית - יב-נ')
+        self.assertEqual(fs, 'ספר בראשית - יב-לו')
+
+        fs = bs.get_file_stem('ספר בראשית/ל')
+        self.assertEqual(fs, 'ספר בראשית - יב-לו')
+
+        # 37-50
+        fs = bs.get_file_stem('ספר בראשית/לז')
+        self.assertEqual(fs, 'ספר בראשית - לז-נ')
 
         fs = bs.get_file_stem('ספר בראשית/נ')
-        self.assertEqual(fs, 'ספר בראשית - יב-נ')
+        self.assertEqual(fs, 'ספר בראשית - לז-נ')
+
 
 if __name__ == '__main__':
     unittest.main()

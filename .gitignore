@@ -1,4 +1,6 @@
 venv/
 
+downloadfromsheets-cache
+
 credentials.json
 token.pickle

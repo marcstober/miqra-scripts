@@ -10,7 +10,7 @@ from google.auth.transport.requests import Request
 
 # See also: https://stackoverflow.com/a/51235960
 
-dirpath = Path('downloads')
+dirpath = Path('downloadfromsheets-cache')
 dirpath.mkdir(exist_ok=True)
 
 class Downloader:

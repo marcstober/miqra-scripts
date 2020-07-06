@@ -46,8 +46,10 @@ class BookSplitter:
         if sefer == 'ספר בראשית':
             if gematria_to_int(perek) < 12:
                 return 'ספר בראשית - א-יא'
+            elif gematria_to_int(perek) < 37:
+                return 'ספר בראשית - יב-לו'
             else:
-                return 'ספר בראשית - יב-נ'
+                return 'ספר בראשית - לז-נ'
         elif sefer == 'ספר תהלים':
             if gematria_to_int(perek) < 42:
                 return 'ספר תהלים - ראשון'
@@ -103,7 +105,7 @@ if __name__ == '__main__':
             'README.tsv',
             'templates תבניות.tsv'
         ]
-    dirname = r'C:\Users\marc\code\miqra-scripts\downloads'
+    dirname = r'C:\Users\marc\code\miqra-scripts\downloadfromsheets-cache'
     for filename in filenames:
         BookSplitter().split_books(Path(dirname, filename))
 
