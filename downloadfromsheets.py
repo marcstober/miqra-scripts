@@ -2,7 +2,6 @@ from pathlib import Path
 import pickle
 import re
 import requests
-import shutil
 import urllib.parse
 from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
@@ -13,12 +12,12 @@ from google.auth.transport.requests import Request
 dirpath = Path('downloadfromsheets-cache')
 dirpath.mkdir(exist_ok=True)
 
+SCOPES = 'https://www.googleapis.com/auth/spreadsheets.readonly'
+SPREADSHEET_ID = '1mkQyj6by1AtBUabpbaxaZq9Z2X3pX8ZpwG91ZCSOEYs'
+
 class Downloader:
     def run(self):
         # If modifying these scopes, delete the file token.pickle.
-        SCOPES = 'https://www.googleapis.com/auth/spreadsheets.readonly'
-
-        SPREADSHEET_ID = '1mkQyj6by1AtBUabpbaxaZq9Z2X3pX8ZpwG91ZCSOEYs'
 
         creds = None
         # The file token.pickle stores the user's access and refresh tokens, and is
