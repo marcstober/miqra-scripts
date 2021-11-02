@@ -151,12 +151,12 @@ class JsonToText:
                 data = json.load(input_file)
 
                 for book in data['body']:
-                    temp_stream.write('<h1>{}</h1>'.format(escape(book['book_name'])))
+                    temp_stream.write('\n<h1>{}</h1>'.format(escape(book['book_name'])))
                     if book['sub_book_name']:
                         temp_stream.write('<h1>: {}</h1>'.format(escape(book['sub_book_name'])))
                     chapters = book['chapters']
                     for hebrew_chapter_number in chapters:
-                        temp_stream.write('<h2>פרק {}</h2>'.format(escape(hebrew_chapter_number)))
+                        temp_stream.write('\n<h2>פרק {}</h2>'.format(escape(hebrew_chapter_number)))
                         chapter = chapters[hebrew_chapter_number]
                         for hebrew_verse_number in chapter:
                             verse = chapter[hebrew_verse_number]
@@ -167,7 +167,7 @@ class JsonToText:
                             # process_templates(verse[1], temp_stream)
                             resolved_html = self.process_templates(verse[2])
                             if resolved_html:
-                                temp_stream.write('<h3>{}</h3>'.format(escape(hebrew_verse_number)))
+                                temp_stream.write('\n<h3>{}</h3>'.format(escape(hebrew_verse_number)))
                                 output_string = '\n<p>'
                                 temp_stream.write(resolved_html)
                                 output_string += '</p>'
