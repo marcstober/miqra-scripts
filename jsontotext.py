@@ -1,4 +1,4 @@
-"""Turns MAM JSON into plain text HTML."""
+"""Convert provided MAM JSON file into an HTML file in which each verse is plain Unicode text."""
 import argparse
 import io
 import json
@@ -6,34 +6,38 @@ import json
 from pathlib import Path
 from html import escape
 
-arg_parser = argparse.ArgumentParser(description='Turns MAM JSON into plain text HTML.')
+arg_parser = argparse.ArgumentParser(description=__doc__)
 arg_parser.add_argument('input_file_path')
 arg_parser.add_argument('--template-table', dest='template_table', default=False, action='store_true', help='show table of templates found')
 args = arg_parser.parse_args()
 
-# TODO: this strips things down to a plain text - create version that preserves special formatting, notes, etc.
+# NOTE: This strips things down to a plain text. TODO: Create version that preserves special formatting, notes, etc.
 # TODO: remove odd "HTML" tag in Deut. 11:21 - asked about fix upstream
+# TODO: Handle all templates in the Tanakh (currently only handles those in Torah).
 
 class JsonToText:
     """Turns MAM JSON into plain text HTML."""
 
     def __init__(self):
-        self.found_template_names = {}
+        self.found_templates = {}
 
     def dispatch_template(self, item):
         template_data = item['tmpl']
         template_name = template_data[0][0]
 
-        if template_name in self.found_template_names:
-            self.found_template_names[template_name]['count'] += 1
+        if template_name in self.found_templates:
+            self.found_templates[template_name]['count'] += 1
         else:
-            self.found_template_names[template_name] = {'count': 1}
+            self.found_templates[template_name] = {'count': 1}
 
         if template_name == 'נוסח':
+            # Handle the "documentation template".
             return self.process_template_nusach(item)
         if template_name == 'מ:פסק':
             return self.process_template_psik()
         if template_name == 'מ:לגרמיה':
+            # Handle legarmeih like psik because they share the same Unicode code point.
+            # A more advanced formatting application (beyond plain Unicode text) might handle it differently.
             return self.process_template_psik() # TODO: something different?
         if template_name == 'מ:קמץ':
             return self.process_template_kamatz(item)
@@ -44,6 +48,8 @@ class JsonToText:
         if template_name == 'קו"כ-אם':
             return self.process_template_nusach(item)
         if template_name == 'מ:הערה':
+            # Footnotes are not included in the output.
+            # A more advanced formatting application might include them.
             return ''
         if template_name == 'כו"ק':
             return self.process_template_ketiv_keri(item)
@@ -56,6 +62,9 @@ class JsonToText:
         if template_name == 'מ:אות-ק':
             return self.process_template_nusach(item)
         if template_name == 'קו"כ':
+            # Handle "keri ketiv" like "ketiv keri".
+            # On the related Wikisource project, "keri ketiv" is a way of formatting "ketiv keri" pairs that involve a maqef.
+            # This application handles both cases the same way.
             return self.process_template_ketiv_keri(item)
         if template_name == 'סס':
             return self.process_template_setumah()
@@ -72,18 +81,18 @@ class JsonToText:
         if template_name == 'ירח בן יומו':
             return '\u05AA'
 
-        self.found_template_names[template_name]['handled'] = False
+        self.found_templates[template_name]['handled'] = False
         return self.process_template(item)
 
     def process_template_nusach(self, item):
-        """Handles any case where the desired output is the first template parameter."""
+        """Handle documentation template, or any other case where desired output is first template parameter."""
         template_items = item['tmpl']
         # FUTURE: footnotes or similar?
         # return '<span style="color: green">{}</span>'.format(self.process_templates(template_items[1]))
         return self.process_templates(template_items[1])
 
     def process_template_psik(self):
-        return ' \u05C0 ';
+        return ' \u05C0 '
 
     def process_template_kamatz(self, item):
         template_items = item['tmpl']
@@ -93,7 +102,7 @@ class JsonToText:
         raise "error" # TODO proper exception
 
     def process_template_setumah(self):
-        return ' ';
+        return ' '
 
     def process_template_ketiv_keri(self, item):
         template_items = item['tmpl']
@@ -115,7 +124,6 @@ class JsonToText:
             if is_first:
                 is_first = False
                 # first item of template is template type
-                # print('UNRESOLVED: {}'.format(template_item[0]))
                 output_string += '<span style="color: #99f">{}</span>'.format(self.process_templates(template_item)) # TODO: really need to call process_templates here?
             else:
                 output_string += '<span style="color: red">, </span>'
@@ -174,11 +182,11 @@ class JsonToText:
                 
                 if args.template_table:
                     output_file.write('\n<table border="1">')
-                    for key in self.found_template_names:
-                        if 'handled' in self.found_template_names[key] and not self.found_template_names[key]['handled']:
-                            output_file.write('\n<tr><td>{}</td><td style="color: red">{}</td></tr>'.format(escape(str(key)), escape(str(self.found_template_names[key]))))
+                    for key in self.found_templates:
+                        if 'handled' in self.found_templates[key] and not self.found_templates[key]['handled']:
+                            output_file.write('\n<tr><td>{}</td><td style="color: red">{}</td></tr>'.format(escape(str(key)), escape(str(self.found_templates[key]))))
                         else:
-                            output_file.write('\n<tr><td>{}</td><td>{}</td></tr>'.format(escape(str(key)), escape(str(self.found_template_names[key]['count']))))
+                            output_file.write('\n<tr><td>{}</td><td>{}</td></tr>'.format(escape(str(key)), escape(str(self.found_templates[key]['count']))))
                     output_file.write('\n</table>')
 
                 output_file.write('<div dir="rtl">')
