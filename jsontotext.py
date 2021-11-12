@@ -150,7 +150,10 @@ class JsonToText:
         input_file_path = Path(args.input_file_path).resolve()
         file_stem = input_file_path.stem
         output_file_path = input_file_path.parent.parent.joinpath('miqra-json-html').joinpath(file_stem).with_suffix('.html')
+        output_json_file_path = input_file_path.parent.parent.joinpath('miqra-json-simple').joinpath(file_stem).with_suffix('.json')
         print(output_file_path)
+
+        simple_books = []
 
         temp_stream = io.StringIO()
 
@@ -159,11 +162,19 @@ class JsonToText:
                 data = json.load(input_file)
 
                 for book in data['body']:
+                    simple_book = {}
+                    simple_books.append(simple_book)
+                    simple_book['book_name'] = book['book_name']
+                    simple_book['sub_book_name'] = book['sub_book_name']
+                    simple_book['chapters'] = {}
+
                     temp_stream.write('\n<h1>{}</h1>'.format(escape(book['book_name'])))
                     if book['sub_book_name']:
                         temp_stream.write('<h1>: {}</h1>'.format(escape(book['sub_book_name'])))
                     chapters = book['chapters']
                     for hebrew_chapter_number in chapters:
+                        simple_book['chapters'][hebrew_chapter_number] = {}
+
                         temp_stream.write('\n<h2>פרק {}</h2>'.format(escape(hebrew_chapter_number)))
                         chapter = chapters[hebrew_chapter_number]
                         for hebrew_verse_number in chapter:
@@ -175,6 +186,8 @@ class JsonToText:
                             # process_templates(verse[1], temp_stream)
                             resolved_html = self.process_templates(verse[2])
                             if resolved_html:
+                                simple_book['chapters'][hebrew_chapter_number][hebrew_verse_number] = resolved_html
+
                                 temp_stream.write('\n<h3>{}</h3>'.format(escape(hebrew_verse_number)))
                                 output_string = '\n<p>'
                                 temp_stream.write(resolved_html)
@@ -195,6 +208,9 @@ class JsonToText:
                 output_file.write(temp_stream.getvalue())
 
                 output_file.write('</div>')
+    
+                with open(output_json_file_path, 'w', encoding='utf-8') as output_json_file:
+                    json.dump(simple_books, output_json_file, indent=2, ensure_ascii=False)
 
 if __name__ == '__main__':
     JsonToText().main()
