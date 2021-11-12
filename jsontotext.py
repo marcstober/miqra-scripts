@@ -189,6 +189,7 @@ class JsonToText:
                             output_file.write('\n<tr><td>{}</td><td>{}</td></tr>'.format(escape(str(key)), escape(str(self.found_templates[key]['count']))))
                     output_file.write('\n</table>')
 
+                output_file.write('<!DOCTYPE html>\n')
                 output_file.write('<div dir="rtl">')
 
                 output_file.write(temp_stream.getvalue())
