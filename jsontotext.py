@@ -1,4 +1,5 @@
-"""Convert provided MAM JSON file into an HTML file in which each verse is plain Unicode text."""
+"""Convert provided MAM JSON file into a simple JSON file and an HTML file
+    in which each verse is plain Unicode text."""
 import argparse
 import io
 import json
