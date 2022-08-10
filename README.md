@@ -35,5 +35,5 @@ Split download files into per-book files and put them in `../miqra-data/source`.
 
 # Troubleshooting
 
-If you get an error try deleting `token.pickle` (and you be prompted to log in to Google Sheets again).
+If you get a RefreshError error try deleting `token.pickle` (and you be prompted to log in to Google Sheets again).
 Here's the relevant Google dashboard: https://console.developers.google.com/apis/dashboard
