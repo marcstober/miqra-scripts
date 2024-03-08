@@ -246,7 +246,7 @@ for approved_line in approved:
     approved_indexed[approved_line["line_number"]] = approved_line
 
 
-file_path_0 = R"..\miqra-data\MAM-Torah-BASE.html"  # Replace with the actual file path
+file_path_0 = R"MAM-Torah-BASE.html"  # Replace with the actual file path
 file_path_1 = (
     R"..\miqra-data\miqra-json-html\MAM-Torah.html"  # Replace with the actual file path
 )
