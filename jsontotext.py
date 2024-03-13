@@ -264,7 +264,9 @@ class JsonToText:
         # remove varika
         # TODO: put this back in once everything else is working and we know what it is (sheva na?)
         # output_string = output_string.replace("\u05B0", "")  # HEBREW POINT SHEVA
-        output_string = output_string.replace("\uFB1E", "")
+        # output_string = output_string.replace(
+        #     "\uFB1E", ""
+        # )  # HEBREW POINT JUDEO-SPANISH VARIKA
 
         if self.current_verse == "לב:ו":
             print("CCC")
