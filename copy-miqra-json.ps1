@@ -3,6 +3,7 @@ $ErrorActionPreference = "Stop"
 # Delete all files in miqra-json directory
 Remove-Item -Path ..\miqra-data\miqra-json\*
 Remove-Item -Path ..\miqra-data\miqra-json-html\*
+Remove-Item -Path ..\miqra-data\miqra-json-simple\*
 
 
 Copy-Item ..\MAM-parsed\plus\*.json ..\miqra-data\miqra-json\

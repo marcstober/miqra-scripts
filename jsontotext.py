@@ -96,6 +96,12 @@ class JsonToText:
             return self.process_template_gershayim_telisha_gedolah()
         if template_name == 'מ:כו"ק כתיב מילה חדה וקרי תרתין מילין':
             return self.process_template_ketiv_keri(item)
+        if template_name == 'מ:כו"ק כתיב תרתין מילין וקרי מילה חדה':
+            return self.process_template_ketiv_keri(item)
+        if template_name == "קרי ולא כתיב":
+            return self.process_template_nusach(item)
+        if template_name == "כתיב ולא קרי":
+            return self.process_template_nusach(item)
         # it seems like instead of the "פסקא באמצע פסוק" template that used
         # to be in the source JSON, there's now just a "פפ" inside a verse
         if template_name == "פפ":
@@ -153,7 +159,9 @@ class JsonToText:
         template_items = item["tmpl_args"] if "tmpl_args" in item else []
         template_items.insert(0, item["tmpl_name"])
         template_items = [[ti] for ti in template_items]  # weird legacy format
-        return "{} [{}]".format(template_items[1][0], template_items[2][0])
+        return "{} [{}]".format(
+            template_items[1][0], self.process_templates(template_items[2])
+        )
 
     def process_template_two_tropes(self, item):
         template_items = item["tmpl"]
@@ -224,18 +232,29 @@ class JsonToText:
                 if "//" in item:
                     # TODO: is this in current version of source JSON?
                     item = item.replace("//", "")
-                if self.current_verse == "לב:ו":
-                    if item == "tmpl_name":
-                        print("  OH NO!")
-                        print("data: ", data)
-                        print("caller name:", inspect.stack()[1][3])
-                    print("SSS")
-                    print(item)
+                # if self.current_verse == "ד:ה":
+                #     print("  OH NO!")
+                #     # print("data: ", data)
+                #     print("SSS")
+                #     print(item)
+                #     if "tmpl" in item:
+                #         print("very bad!")
                 output_string += escape(item)
             else:
                 # if it looks like a template
                 if isinstance(item, dict) and "tmpl_name" in item:
-                    output_string += self.dispatch_template(item)
+                    s = self.dispatch_template(item)
+                    if "tmpl" in s:
+                        print("very bad!!")
+                        print("---")
+                        print(item)
+                        print("---")
+                        print(s)
+                        print("---")
+                        print("caller name:", inspect.stack()[1][3])
+                        print("---")
+                        print("---")
+                    output_string += s
                 elif "custom_tag" in item:
                     # TODO: is this in current version of source JSON?
                     # I'm not even sure we were handling it correctly before because the live parsh.io
@@ -263,12 +282,18 @@ class JsonToText:
             book24_names = json.load(input_file)
 
         # output_file_stem = None
-        print(file_stem)
+        book24_names.sort(key=lambda book24: book24["number"])
         for book24_name in book24_names:
             if book24_name["mam_parsed_file_stem"] == file_stem:
                 output_file_stem = book24_name["mam_parsed_file_stem_old"]
-                this_book_number = book24_name.get("number", 0)
+                this_book_number = book24_name["number"]
                 break
+
+        books_in_file = [
+            book24_names["book24_name"]
+            for book24_names in book24_names
+            if book24_names["mam_parsed_file_stem_old"] == output_file_stem
+        ]
 
         book24_names_by_hebrew_name = {}
         for book24_name in book24_names:
@@ -349,21 +374,53 @@ class JsonToText:
                             temp_stream.write(
                                 "\n<h3>{}</h3>".format(escape(hebrew_verse_number))
                             )
-                            output_string = "\n<p>"
+                            # output_string = "\n<p>"
                             temp_stream.write(resolved_html)
-                            output_string += "</p>"
+                            # output_string += "</p>"
 
             # TODO: Is this working?
             if args.template_table:
                 self.write_template_table(temp_stream)
 
-            # load the output file if it already exists
+            # load the output files if they already exist
+            # html
             existing_output_data = []
             if os.path.exists(output_file_path):
                 with open(
                     output_file_path, "r", encoding="utf-8"
                 ) as existing_output_file:
                     existing_output_data = existing_output_file.readlines()
+            # json
+            existing_simple_books = []
+            if os.path.exists(output_json_file_path):
+                with open(
+                    output_json_file_path, "r", encoding="utf-8"
+                ) as existing_json_file:
+                    existing_simple_books = json.load(existing_json_file)
+
+            existing_simple_books_by_name = {}
+            for existing_simple_book in existing_simple_books:
+                existing_simple_books_by_name[existing_simple_book["book_name"]] = (
+                    existing_simple_book
+                )
+
+            # splice in this book
+            # new_simple_books = []
+            # for book in books_in_file:
+            #     if book in existing_simple_books_by_name:
+            #         new_simple_books.append(existing_simple_books_by_name[book])
+            #     elif book ==
+
+            existing_simple_books.extend(simple_books)
+
+            def get_book_number(book_name):
+                return book24_names_by_hebrew_name[book_name]["number"]
+
+            existing_simple_books.sort(
+                key=lambda book: get_book_number(book["book_name"])
+            )
+
+            simple_books = existing_simple_books
 
             existing_books = {}
             current_book = []
